@@ -49,6 +49,8 @@ return array(
             // allow unauthenticated users based on the rules.
             'deny_by_default' => false,
 
+            //Specifies the factory used to create the AclAuthorization object
+            'alc_factory' => ''
             /*
              * Rules indicating what controllers are behind authentication.
              *

@@ -3,10 +3,18 @@
 namespace ZFTest\MvcAuth\Authorization;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\ServiceManager;
 use ZF\MvcAuth\Authorization\AclAuthorizationFactory;
 
 class AclAuthorizationFactoryTest extends TestCase
 {
+    private $services;
+
+    public function setUp()
+    {
+        $this->services = new ServiceManager();
+    }
+
     public function testFactoryGeneratesAclFromConfiguration()
     {
         $config = array(
@@ -24,7 +32,7 @@ class AclAuthorizationFactoryTest extends TestCase
             ),
         );
 
-        $acl = AclAuthorizationFactory::factory($config);
+        $acl = AclAuthorizationFactory::factory($config, $this->services);
 
         $this->assertInstanceOf('ZF\MvcAuth\Authorization\AclAuthorization', $acl);
         $this->assertInstanceOf('Zend\Permissions\Acl\Acl', $acl);
@@ -71,7 +79,7 @@ class AclAuthorizationFactoryTest extends TestCase
             ),
         );
 
-        $acl = AclAuthorizationFactory::factory($config);
+        $acl = AclAuthorizationFactory::factory($config, $this->services);
 
         $this->assertInstanceOf('ZF\MvcAuth\Authorization\AclAuthorization', $acl);
         $this->assertInstanceOf('Zend\Permissions\Acl\Acl', $acl);

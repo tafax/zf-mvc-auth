@@ -6,9 +6,11 @@
 
 namespace ZF\MvcAuth\Authorization;
 
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 abstract class AclAuthorizationFactory
 {
-    public static function factory(array $config)
+    public static function factory(array $config, ServiceLocatorInterface $services)
     {
         // Determine whether we are whitelisting or blacklisting
         $denyByDefault = false;

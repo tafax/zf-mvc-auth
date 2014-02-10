@@ -9,7 +9,7 @@ namespace ZF\MvcAuth\Factory;
 use Zend\Http\Request;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use ZF\MvcAuth\Authorization\AclAuthorizationFactory as AclFactory;
+use Zend\Di\Exception\ClassNotFoundException;
 
 /**
  * Factory for creating an AclAuthorization instance from configuration
@@ -40,7 +40,7 @@ class AclAuthorizationFactory implements FactoryInterface
             $config = $services->get('config');
         }
 
-        return $this->createAclFromConfig($config);
+        return $this->createAclFromConfig($config, $services);
     }
 
     /**
@@ -48,12 +48,16 @@ class AclAuthorizationFactory implements FactoryInterface
      *
      * Consumes the AclFactory in order to create the AclAuthorization instance.
      *
-     * @param array $config
+     * @param array                                        $config
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $services
+     * @throws \Zend\Di\Exception\ClassNotFoundException
      * @return \ZF\MvcAuth\Authorization\AclAuthorization
      */
-    protected function createAclFromConfig(array $config)
+    protected function createAclFromConfig(array $config, ServiceLocatorInterface $services)
     {
         $aclConfig = array();
+
+        $factory = 'ZF\MvcAuth\Authorization\AclAuthorizationFactory';
 
         if (isset($config['zf-mvc-auth'])
             && isset($config['zf-mvc-auth']['authorization'])
@@ -68,9 +72,15 @@ class AclAuthorizationFactory implements FactoryInterface
             foreach ($config as $controllerService => $privileges) {
                 $this->createAclConfigFromPrivileges($controllerService, $privileges, $aclConfig);
             }
+
+            if(isset($config['factory']))
+                $factory = $config['factory'];
         }
 
-        return AclFactory::factory($aclConfig);
+        if(!class_exists($factory) && '' == trim($factory))
+            throw new ClassNotFoundException('Unable to find "' . $factory . '" used as the factory for authorization.');
+
+        return $factory::factory($aclConfig, $services);
     }
 
     /**
