@@ -57,7 +57,7 @@ class AclAuthorizationFactory implements FactoryInterface
     {
         $aclConfig = array();
 
-        $factory = 'ZF\MvcAuth\Authorization\AclAuthorizationFactory';
+        $factory = '';
 
         if (isset($config['zf-mvc-auth'])
             && isset($config['zf-mvc-auth']['authorization'])
@@ -69,15 +69,18 @@ class AclAuthorizationFactory implements FactoryInterface
                 unset($config['deny_by_default']);
             }
 
+            if(isset($config['acl_factory']))
+            {
+                $factory = $config['acl_factory'];
+                unset($config['acl_factory']);
+            }
+
             foreach ($config as $controllerService => $privileges) {
                 $this->createAclConfigFromPrivileges($controllerService, $privileges, $aclConfig);
             }
-
-            if(isset($config['factory']))
-                $factory = $config['factory'];
         }
 
-        if(!class_exists($factory) && '' == trim($factory))
+        if(!class_exists($factory))
             throw new ClassNotFoundException('Unable to find "' . $factory . '" used as the factory for authorization.');
 
         return $factory::factory($aclConfig, $services);

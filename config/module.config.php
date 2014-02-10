@@ -50,7 +50,7 @@ return array(
             'deny_by_default' => false,
 
             //Specifies the factory used to create the AclAuthorization object
-            'alc_factory' => ''
+            'acl_factory' => 'ZF\MvcAuth\Authorization\AclAuthorizationFactory'
             /*
              * Rules indicating what controllers are behind authentication.
              *
